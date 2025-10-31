@@ -2,20 +2,23 @@ package com.shop_here.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
-@Table(name="products")
-public class Product {
+@Table(name="categories")
+public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String description;
-    private Double price;
-    private Integer stock;
 
-    @ManyToOne
-    @JoinColumn(name="category_id")
-    private Category category;
+    @Column(nullable = false,unique = true)
+    private String name;
+
+    private String description;
+
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    private List<Product> productList;
 
     public Long getId() {
         return id;
@@ -41,19 +44,11 @@ public class Product {
         this.description = description;
     }
 
-    public Double getPrice() {
-        return price;
+    public List<Product> getProductList() {
+        return productList;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
+    public void setProductList(List<Product> productList) {
+        this.productList = productList;
     }
 }
