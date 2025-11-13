@@ -1,9 +1,15 @@
 package com.shop_here.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "users")
 @Data
 public class User {
@@ -17,5 +23,6 @@ public class User {
 
     private String password;
 
+    @Column(nullable = false)
     private String role; // ROLE_USER or ROLE_ADMIN
 }

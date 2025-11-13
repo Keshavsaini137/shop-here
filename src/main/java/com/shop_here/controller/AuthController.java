@@ -4,6 +4,7 @@ import com.shop_here.model.User;
 import com.shop_here.repository.UserRepository;
 import com.shop_here.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,22 @@ public class AuthController {
         userRepository.save(user);
 
         return "User Registered Successfully";
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> registerUser(@RequestBody User user){
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            return ResponseEntity.badRequest().body("User Already Exist.");
+        }
+
+        User newUser = User.builder()
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(user.getPassword()))
+                .role("ROLE_USER")
+                .build();
+
+        userRepository.save(newUser);
+        return ResponseEntity.ok("User registered successfully.");
     }
 
     @PostMapping("/login")
