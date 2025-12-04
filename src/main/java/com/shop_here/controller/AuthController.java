@@ -6,6 +6,7 @@ import com.shop_here.model.User;
 import com.shop_here.repository.UserRepository;
 import com.shop_here.security.JwtUtil;
 import com.shop_here.service.CustomUserService;
+import com.shop_here.utils.GlobalConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,7 +54,7 @@ public class AuthController {
         User newUser = User.builder()
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(user.getPassword()))
-                .role("ROLE_USER")
+                .role(GlobalConstant.USER_ROLE)
                 .build();
 
         userRepository.save(newUser);

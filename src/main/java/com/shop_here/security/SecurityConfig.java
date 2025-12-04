@@ -41,11 +41,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/products/**")
                         .hasAnyRole("USER","ADMIN")
                         .requestMatchers("/products/**").hasRole("ADMIN")
+                        .requestMatchers("/cart/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 //                .formLogin(form->form.disable());
+
         return http.build();
 
     }
