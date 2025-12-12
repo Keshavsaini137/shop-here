@@ -29,19 +29,17 @@ public class CartService {
     @Autowired
     private UserRepository userRepository;
 
-    // ✅ Get or Create Cart
     private Cart getOrCreateCart(String email) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return cartRepository.findByUser(user)
+        return cartRepository.findById(user.getId())
                 .orElseGet(() -> cartRepository.save(
                         Cart.builder().user(user).build()
                 ));
     }
 
-    // ✅ Add to Cart
     public String addToCart(String email, Long productId, int quantity) {
 try{
         Cart cart = getOrCreateCart(email);
@@ -71,14 +69,25 @@ try{
         }
     }
 
-    // ✅ View My Cart
     public Cart viewMyCart(String email) {
 
         Cart cart = getOrCreateCart(email);
         return cart;
     }
 
-    // ✅ Update Quantity
+    public void clearCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        cartItemRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+
+        cart.setTotalAmount(0.0);
+        cartRepository.save(cart);
+    }
+
+
+
     public String updateQuantity(String email, Long productId, int quantity) {
 
         Cart cart = getOrCreateCart(email);
@@ -96,7 +105,7 @@ try{
         return "Quantity updated";
     }
 
-    // ✅ Remove from Cart
+
     public String removeFromCart(String email, Long productId) {
 
         Cart cart = getOrCreateCart(email);
