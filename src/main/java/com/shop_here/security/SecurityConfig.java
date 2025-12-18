@@ -1,5 +1,4 @@
 package com.shop_here.security;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.AntPathMatcher;
-
-@EnableMethodSecurity
-@Configuration
+@EnableMethodSecurity @Configuration
 public class SecurityConfig {
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -29,26 +25,25 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf ->csrf.disable())
-                .authorizeHttpRequests(auth ->auth
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/products/**")
-                        .hasAnyRole("USER","ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/products/**")
+                        .hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/products/**").hasRole("ADMIN")
-                        .requestMatchers("/cart/**").hasRole("USER")
-                        .anyRequest().authenticated())
+                        .requestMatchers("/cart/**").hasRole("USER").anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//                .formLogin(form->form.disable());
 
-        return http.build();
 
+
+    //.formLogin(form->form.disable());
+        return http.build(); }
     }
-}

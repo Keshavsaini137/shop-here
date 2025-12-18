@@ -23,6 +23,10 @@ public class User {
 
     private String password;
 
+    private String name;
+
+    private String dob;
+
     @Column(nullable = false)
     private String role; // ROLE_USER or ROLE_ADMIN
 }
