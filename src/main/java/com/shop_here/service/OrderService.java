@@ -4,6 +4,9 @@ import com.shop_here.model.*;
 import com.shop_here.repository.CartRepository;
 import com.shop_here.repository.OrderRepository;
 import com.shop_here.repository.ProductRepository;
+import com.shop_here.utils.enums.OrderStatus;
+import com.shop_here.utils.exceptions.AccessDeniedException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,12 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
+    public List<Order> getOrdersByUser(Long userId) {
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+
+    @Transactional
     public Order placeOrder(Long userId) {
 
         Cart cart = cartRepository.findByUserId(userId)
@@ -31,7 +40,7 @@ public class OrderService {
         Order order = new Order();
         order.setUserId(userId);
         order.setCreatedAt(new Date());
-        order.setStatus("PLACED");
+        order.setStatus(OrderStatus.PLACED);
         order.setTotalAmount(cart.getTotalAmount());
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -71,5 +80,35 @@ public class OrderService {
 
         return order;
     }
+
+    public Order getOrderById(Long orderId, User user) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // ADMIN can access any order
+        if (user.getRole().equals("ROLE_ADMIN")) {
+            return order;
+        }
+
+        // USER can access only their orders
+        if (!order.getUserId().equals(user.getId())) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        return order;
+    }
+
+
+    @Transactional
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        order.setStatus(status);
+        return orderRepository.save(order);
+    }
+
 }
 
