@@ -1,12 +1,15 @@
 package com.shop_here.controller;
 
-import com.shop_here.dto.CartItemResponse;
-import com.shop_here.dto.CartResponse;
+import com.shop_here.dto.response.CartItemResponse;
+import com.shop_here.dto.response.CartResponse;
 import com.shop_here.model.Cart;
 import com.shop_here.model.CartItem;
 import com.shop_here.model.User;
 import com.shop_here.repository.UserRepository;
 import com.shop_here.service.CartService;
+import com.shop_here.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +22,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(CartController.class);
 
     @Autowired
     private CartService cartService;
@@ -43,6 +49,7 @@ public class CartController {
     public ResponseEntity<?> viewMyCart(Authentication authentication) {
 
         String email = authentication.getName();
+        log.info("Email : "+ email);
         Cart cart = cartService.viewMyCart(email);
 
         List<CartItemResponse> items = new ArrayList<>();

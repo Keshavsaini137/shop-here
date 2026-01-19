@@ -1,6 +1,7 @@
 package com.shop_here.service;
 
 
+import com.shop_here.controller.CartController;
 import com.shop_here.model.Cart;
 import com.shop_here.model.CartItem;
 import com.shop_here.model.Product;
@@ -9,6 +10,8 @@ import com.shop_here.repository.CartItemRepository;
 import com.shop_here.repository.CartRepository;
 import com.shop_here.repository.ProductRepository;
 import com.shop_here.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +19,8 @@ import java.util.Arrays;
 
 @Service
 public class CartService {
-
+    private static final Logger log =
+            LoggerFactory.getLogger(CartService.class);
     @Autowired
     private CartRepository cartRepository;
 
@@ -30,11 +34,13 @@ public class CartService {
     private UserRepository userRepository;
 
     private Cart getOrCreateCart(String email) {
-
+        log.info("Inside getOrCreateCart");
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return cartRepository.findById(user.getId())
+        log.info("USer ID" + user.getId());
+        log.info("Cart: " + cartRepository.findByUserId(user.getId()).orElse(null));
+        return cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> cartRepository.save(
                         Cart.builder().user(user).build()
                 ));

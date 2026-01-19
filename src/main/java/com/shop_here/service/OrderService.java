@@ -46,8 +46,7 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
 
         for (CartItem cartItem : cart.getItems()) {
-
-            // ↓↓↓ Reduce product stock
+            // Reduce product stock
             Product product = productRepository.findById(cartItem.getProduct().getId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
             if (product.getStock() < cartItem.getQuantity()) {
@@ -56,7 +55,7 @@ public class OrderService {
             product.setStock(product.getStock() - cartItem.getQuantity());
             productRepository.save(product);
 
-            // ↓↓↓ Create order item
+            // Create order item
             OrderItem item = new OrderItem();
             item.setProductId(product.getId());
             item.setProductName(product.getName());
@@ -109,6 +108,33 @@ public class OrderService {
         order.setStatus(status);
         return orderRepository.save(order);
     }
+
+    @Transactional
+    public Order cancelOrder(Long orderId, User user) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUserId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized order cancellation");
+        }
+
+        if (order.getStatus() != OrderStatus.PLACED) {
+            throw new RuntimeException("Order cannot be cancelled");
+        }
+
+        // Restore stock
+        for (OrderItem item : order.getItems()) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new RuntimeException("No Product found"));
+            product.setStock(product.getStock() + item.getQuantity());
+            productRepository.save(product);
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        return orderRepository.save(order);
+    }
+
 
 }
 

@@ -1,7 +1,7 @@
 package com.shop_here.controller;
 
-import com.shop_here.dto.AuthResponse;
-import com.shop_here.dto.LoginRequest;
+import com.shop_here.dto.response.AuthResponse;
+import com.shop_here.dto.request.LoginRequest;
 import com.shop_here.model.User;
 import com.shop_here.repository.UserRepository;
 import com.shop_here.security.JwtUtil;

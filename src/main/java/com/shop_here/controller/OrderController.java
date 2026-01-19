@@ -67,6 +67,17 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<Order> cancelOrder(
+            @PathVariable Long orderId,
+            Authentication authentication) {
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow();
+
+        return ResponseEntity.ok(orderService.cancelOrder(orderId, user));
+    }
 
 }
 

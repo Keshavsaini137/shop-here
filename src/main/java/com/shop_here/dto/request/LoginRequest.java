@@ -1,4 +1,4 @@
-package com.shop_here.dto;
+package com.shop_here.dto.request;
 
 import lombok.Data;
 
